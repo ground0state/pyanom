@@ -22,7 +22,7 @@ def read_requirements():
 
 setup(
     name='pyanom',
-    version='0.0.1',
+    version='0.0.1.dev1',
     description='Anomaly detection package',
     long_description=readme,
     author='Masafumi Abeta',
@@ -30,5 +30,16 @@ setup(
     install_requires=read_requirements(),
     url='https://github.com/ground0state/pyanom',
     license=license,
-    packages=find_packages(exclude=('tests', 'docs'))
+    packages=find_packages(exclude=('tests', 'docs')),
+    test_suite='tests',
+    classifiers=[
+        'License :: OSI Approved :: MIT License',
+        'Development Status :: 2 - Pre-Alpha',
+        'Operating System :: OS Independent',
+        'Programming Language :: Python',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9'
+    ],
 )

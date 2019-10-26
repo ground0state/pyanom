@@ -8,7 +8,7 @@ class TestKLDensityRatioEstimation(unittest.TestCase):
     """Basic test cases."""
 
     def _getTarget(self):
-        from pyanom.kl_density_ratio_estimation import KLDensityRatioEstimation
+        from pyanom.density_ratio_estimation import KLDensityRatioEstimation
         return KLDensityRatioEstimation
 
     def _makeOne(self, *args, **kwargs):
