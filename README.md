@@ -1,6 +1,6 @@
 # pyanom Module Repository
 
-![]（https://img.shields.io/badge/python-%7C3.6%7C3.7%7C3.8-green）
+[![]（https://img.shields.io/badge/python-%7C3.6%7C3.7%7C3.8-green）]
 
 This library is Python projects for anomaly detection. This contains these techniques.
 
