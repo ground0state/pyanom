@@ -1,11 +1,20 @@
-# pyanom Module Repository
+# pyanom
 
-![](https://img.shields.io/badge/python-%7C3.6%7C3.7%7C3.8-green.svg?style=for-the-badge)
-
+![](https://img.shields.io/badge/python-3.6%7C3.7%7C3.8-green?style=plastic)
 
 This library is Python projects for anomaly detection. This contains these techniques.
 
 - Kullback-Leibler desity estimation
+- Singular spectrum analysis
+- Graphical lasso
+- CUSUM anomaly detection
+- Hoteling T2
+- Directional data anomaly detection
+
+## REQUIREMENTS
+
+- numpy
+- pandas
 
 ## INSTALLATION
 
@@ -25,12 +34,3 @@ model = KLDensityRatioEstimation(
 model.fit(train_normal_data, train_error_data)
 anomaly_score = model.predict(normal_data, error_data)
 ```
-
-## REQUIREMENTS
-
-- numpy
-- pandas
-
-## Licence
-
-[MIT License](https://github.com/tcnksm/tool/blob/master/LICENCE)

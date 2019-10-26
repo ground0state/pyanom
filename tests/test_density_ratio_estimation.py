@@ -58,11 +58,11 @@ class TestKLDensityRatioEstimation(unittest.TestCase):
                                  [0.849156845, 0.533674261, 0.069183014],
                                  [0.102812565, 8, 1.545239732]])
 
-    def test_predict_shape(self):
+    def test_score_shape(self):
         target = self._makeOne(
             band_width=1.0, learning_rate=0.1, num_iterations=10)
         target.fit(self.X_normal, self.X_error)
-        pred = target.predict(self.X_normal, self.X_error)
+        pred = target.score(self.X_normal, self.X_error)
         self.assertEqual(pred.shape, (20,))
 
     def test_incorrect_feature_number(self):
@@ -112,7 +112,7 @@ class TestKLDensityRatioEstimation(unittest.TestCase):
         target = self._makeOne(
             band_width=1.0, learning_rate=0.1, num_iterations=10)
         target.fit(X1, X2)
-        pred = target.predict(X1, X2)
+        pred = target.score(X1, X2)
         self.assertEqual(pred.shape, (3,))
 
     def test_incorrect_type(self):
@@ -139,7 +139,7 @@ class TestKLDensityRatioEstimation(unittest.TestCase):
         target = self._makeOne(
             band_width=1.0, learning_rate=0.1, num_iterations=10)
         target.fit(self.X_normal, self.X_error)
-        self.assertEqual(len(target.get_running_score()), 10)
+        self.assertEqual(len(target.get_running_loss()), 10)
 
 
 if __name__ == '__main__':

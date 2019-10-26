@@ -54,3 +54,16 @@ def check_input_shape(X1, X2):
     if X1.shape[1] != X2.shape[1]:
         raise ValueError("Feature size is not same")
     return True
+
+
+def check_array_feature_dimension(array, d=1):
+    if array.shape[1] != d:
+        raise ValueError(f"Feature size is not {d}d")
+    return True
+
+
+def zscore(x, axis=None):
+    xmean = x.mean(axis=axis, keepdims=True)
+    xstd = np.std(x, axis=axis, keepdims=True)
+    zscore = (x-xmean)/xstd
+    return zscore

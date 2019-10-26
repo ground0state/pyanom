@@ -2,8 +2,8 @@
 Copyright (c) 2019 ground0state. All rights reserved.
 License: MIT License
 """
-from pyanom.utils import check_array_type, check_input_shape
 import numpy as np
+from pyanom.utils import check_array_type, check_input_shape
 
 
 class KLDensityRatioEstimation():
@@ -71,8 +71,8 @@ class KLDensityRatioEstimation():
             r = np.maximum(r, self.eps)
             r_prime = np.dot(self.psi_prime, self.theta)
             r_prime = np.maximum(r_prime, self.eps)
-            self.Js.append(np.sum(r_prime)/len(X_error) -
-                           np.sum(np.log(r))/len(X_normal))
+            J = np.sum(r_prime)/len(X_error) - np.sum(np.log(r))/len(X_normal)
+            self.Js.append(J)
 
             # calculate gradient
             dJ = dJ_1 - (self.psi / r).sum(axis=0) / len(X_normal)
@@ -84,48 +84,17 @@ class KLDensityRatioEstimation():
     def _gaussian_kernel(self, x, X):
         return np.exp(-np.sum((x - X)**2, axis=1)/(2*self.band_width**2))
 
-    def get_running_score(self):
+    def get_running_loss(self):
         """Kullback-Leibler density ratio estimation.
 
         Returns
         -------
         Js : array-like, shape (num_iterations,)
-            scores of objective function in training.
+            losses of objective function in training.
         """
         return self.Js
 
     def score(self, X_normal, X_error):
-        """Calculate score of objective function.
-
-        Parameters
-        ----------
-        X_normal : array-like, shape (n_samples, n_features)
-            Normal measured vectors, where n_samples is the number of samples
-            and n_features is the number of features.
-
-        X_error: array-like, shape (n_samples, n_features)
-            Error measured vectors, where n_samples is the number of samples
-            and n_features is the number of features.
-
-        Returns
-        -------
-        self : object
-        """
-        # validation
-        X_normal = check_array_type(X_normal)
-        X_error = check_array_type(X_error)
-        check_input_shape(X_normal, X_error)
-
-        psi = np.asarray([self._gaussian_kernel(x, X_normal)
-                          for x in X_normal])
-        psi_prime = np.asarray([self._gaussian_kernel(x, X_normal)
-                                for x in X_error])
-        r = np.dot(psi, self.theta)
-        r_prime = np.dot(psi_prime, self.theta)
-        J = np.sum(r_prime)/len(X_error) - np.sum(np.log(r))/len(X_normal)
-        return J
-
-    def predict(self, X_normal, X_error):
         """Calculate anomaly score according to the given test data.
 
         Parameters
@@ -140,7 +109,7 @@ class KLDensityRatioEstimation():
 
         Returns
         -------
-        anomaly_score : array-like, shape (num_iterations,)
+        anomaly_score : array-like, shape (n_samples,)
             Anomaly score.
         """
         # validation
