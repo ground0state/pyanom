@@ -24,3 +24,12 @@ model = KLDensityRatioEstimation(
 model.fit(train_normal_data, train_error_data)
 anomaly_score = model.predict(normal_data, error_data)
 ```
+
+## REQUIREMENTS
+
+- numpy
+- pandas
+
+## Licence
+
+[MIT License](https://github.com/tcnksm/tool/blob/master/LICENCE)
