@@ -8,7 +8,7 @@ This library is Python projects for anomaly detection. This contains these techn
 - Kullback-Leibler desity estimation
 - Singular spectrum analysis
 - Graphical lasso
-- CUSUM anomaly detection
+- CUMSUM anomaly detection
 - Hoteling T2
 - Directional data anomaly detection
 
@@ -28,7 +28,11 @@ pip install pyanom
 ### Kullback-Leibler desity estimation
 
 ```python
+import numpy as np
 from pyanom.density_ratio_estimation import KLDensityRatioEstimation
+
+X_normal = np.loadtxt("../input/normal_data.csv", delimiter=",")
+X_error = np.loadtxt("../input/error_data.csv", delimiter=",")
 
 model = KLDensityRatioEstimation(
     band_width=0.1, learning_rate=0.1, num_iterations=100)
@@ -39,17 +43,24 @@ anomaly_score = model.predict(X_normal, X_error)
 ### Singular spectrum analysis
 
 ```python
+import numpy as np
 from pyanom.subspace_methods import SSA
 
+y_error = np.loadtxt("../input/timeseries_error2.csv", delimiter=",")
+
 model = SSA()
-model.fit(y, window_size=50, trajectory_n=25, trajectory_pattern=3, test_n=25, test_pattern=2, lag=25)
+model.fit(y_error, window_size=50, trajectory_n=25, trajectory_pattern=3, test_n=25, test_pattern=2, lag=25)
 anomaly_score = model.score()
 ```
 
 ### Graphical lasso
 
 ```python
+import numpy as np
 from pyanom.structure_learning import GraphicalLasso
+
+X_normal = np.loadtxt("../input/normal_data.csv", delimiter=",")
+X_error = np.loadtxt("../input/error_data.csv", delimiter=",")
 
 model = GraphicalLasso()
 model.fit(X_normal, rho=0.01, normalize=True)
@@ -59,7 +70,13 @@ anomaly_score = model.outlier_analysis_score(X_error)
 ### CUSUM anomaly detection
 
 ```python
+import numpy as np
 from pyanom.outlier_detection import CAD
+
+y_normal = np.loadtxt(
+    "../input/timeseries_normal.csv", delimiter=",").reshape(-1, 1)
+y_error = np.loadtxt(
+    "../input/timeseries_error.csv", delimiter=",").reshape(-1, 1)
 
 model = CAD()
 model.fit(y_normal, threshold=1)
@@ -69,7 +86,11 @@ anomaly_score = model.score(y_error)
 ### Hoteling T2
 
 ```python
+import numpy as np
 from pyanom.outlier_detection import HotelingT2
+
+X_normal = np.loadtxt("../input/normal_data.csv", delimiter=",")
+X_error = np.loadtxt("../input/error_data.csv", delimiter=",")
 
 model = HotelingT2()
 model.fit(X_normal)
@@ -79,7 +100,12 @@ anomaly_score = model.score(X_error)
 ### Directional data anomaly DirectionalDataAnomalyDetection
 
 ```python
-from pyanom.outlier_detection import HotelingT2
+import numpy as np
+from pyanom.outlier_detection import DirectionalDataAnomalyDetection
+
+X_normal = np.loadtxt(
+    "../input/normal_direction_data.csv", delimiter=",")
+X_error = np.loadtxt("../input/error_direction_data.csv", delimiter=",")
 
 model = DirectionalDataAnomalyDetection()
 model.fit(X_normal, normalize=True))
