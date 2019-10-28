@@ -4,7 +4,7 @@ License: MIT License
 """
 import numpy as np
 # from scipy.stats import f
-from pyanom.utils import check_array_type, check_input_shape, check_array_feature_dimension, zscore
+from pyanom.utils import check_array_type, check_input_shape, check_array_feature_dimension, zscore, tensor_normalize
 
 
 class CAD():
@@ -182,7 +182,7 @@ class DirectionalDataAnomalyDetection():
         X = check_array_type(X)
 
         if normalize:
-            X = zscore(X, axis=0)
+            X = tensor_normalize(X, axis=1)
 
         self.mean_val = X.mean(axis=0).reshape(-1, 1)
 
