@@ -108,6 +108,6 @@ X_normal = np.loadtxt(
 X_error = np.loadtxt("../input/error_direction_data.csv", delimiter=",")
 
 model = DirectionalDataAnomalyDetection()
-model.fit(X_normal, normalize=True))
+model.fit(X_normal, normalize=True)
 anomaly_score = model.score(X_error)
 ```
