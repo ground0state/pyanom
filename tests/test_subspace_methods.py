@@ -1,4 +1,3 @@
-import io
 import unittest
 
 import numpy as np
@@ -38,15 +37,19 @@ class TestSSA(unittest.TestCase):
                                  -3.722489636])
 
     def test_score_shape(self):
-        target = self._makeOne()
         window_size = 3
         trajectory_n = 2
         trajectory_pattern = 2
         test_n = 2
         test_pattern = 2
         lag = 3
-        target.fit(self.X_error, window_size=window_size, trajectory_n=trajectory_n,
-                   trajectory_pattern=trajectory_pattern, test_n=test_n, test_pattern=test_pattern, lag=lag)
+        target = self._makeOne(window_size=window_size, trajectory_n=trajectory_n,
+                               trajectory_pattern=trajectory_pattern, test_n=test_n, test_pattern=test_pattern, lag=lag)
+        target.fit(self.X_error, )
         pred = target.score()
-        self.assertEqual(pred.shape, (len(self.X_error)-2 *
-                                      window_size-trajectory_n-test_n+1, ))
+        self.assertEqual(pred.shape, (len(self.X_error) - 2 *
+                                      window_size - trajectory_n - test_n + 1, ))
+
+
+if __name__ == '__main__':
+    unittest.main()

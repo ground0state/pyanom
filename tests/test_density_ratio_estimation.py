@@ -1,4 +1,3 @@
-import io
 import unittest
 
 import numpy as np
@@ -8,8 +7,8 @@ class TestKLDensityRatioEstimation(unittest.TestCase):
     """Basic test cases."""
 
     def _getTarget(self):
-        from pyanom.density_ratio_estimation import KLDensityRatioEstimation
-        return KLDensityRatioEstimation
+        from pyanom.density_ratio_estimation import KLDensityRatioEstimator
+        return KLDensityRatioEstimator
 
     def _makeOne(self, *args, **kwargs):
         return self._getTarget()(*args, **kwargs)
@@ -60,9 +59,9 @@ class TestKLDensityRatioEstimation(unittest.TestCase):
 
     def test_score_shape(self):
         target = self._makeOne(
-            band_width=1.0, learning_rate=0.1, num_iterations=10)
+            band_width=1.0, lr=0.1, max_iter=10)
         target.fit(self.X_normal, self.X_error)
-        pred = target.score(self.X_normal, self.X_error)
+        pred = target.score(self.X_error)
         self.assertEqual(pred.shape, (20,))
 
     def test_incorrect_feature_number(self):
@@ -89,7 +88,7 @@ class TestKLDensityRatioEstimation(unittest.TestCase):
 
         with self.assertRaises(ValueError):
             target = self._makeOne(
-                band_width=1.0, learning_rate=0.1, num_iterations=10)
+                band_width=1.0, lr=0.1, max_iter=10)
             target.fit(self.X_normal, X_incorect)
 
     def test_incorrect_input_dimension(self):
@@ -103,17 +102,16 @@ class TestKLDensityRatioEstimation(unittest.TestCase):
                                  [0.653070988, -0.052417831, 0.787284547]]])
         with self.assertRaises(ValueError):
             target = self._makeOne(
-                band_width=1.0, learning_rate=0.1, num_iterations=10)
+                band_width=1.0, lr=0.1, max_iter=10)
             target.fit(X_incorect1, X_incorect2)
 
     def test_1d_input(self):
         X1 = [0.975586009, -0.745997359, -0.229331244]
         X2 = [0.653070988, -0.052417831, 0.787284547]
         target = self._makeOne(
-            band_width=1.0, learning_rate=0.1, num_iterations=10)
-        target.fit(X1, X2)
-        pred = target.score(X1, X2)
-        self.assertEqual(pred.shape, (3,))
+            band_width=1.0, lr=0.1, max_iter=10)
+        with self.assertRaises(ValueError):
+            target.fit(X1, X2)
 
     def test_incorrect_type(self):
         with self.assertRaises(ValueError):
@@ -122,7 +120,7 @@ class TestKLDensityRatioEstimation(unittest.TestCase):
                                    [[-0.503171745, -1.308368748, -1.451411048],
                                     [-0.904446243, -0.287837582, 0.197153592]]])
             target = self._makeOne(
-                band_width=1.0, learning_rate=0.1, num_iterations=10)
+                band_width=1.0, lr=0.1, max_iter=10)
             target.fit(X_incorect, self.X_error)
 
     def test_contain_nan(self):
@@ -132,14 +130,14 @@ class TestKLDensityRatioEstimation(unittest.TestCase):
                                    [[-0.503171745, -1.308368748, -1.451411048],
                                     [-0.904446243, -0.287837582, 0.197153592]]])
             target = self._makeOne(
-                band_width=1.0, learning_rate=0.1, num_iterations=10)
+                band_width=1.0, lr=0.1, max_iter=10)
             target.fit(X_incorect, self.X_error)
 
     def test_score_len(self):
         target = self._makeOne(
-            band_width=1.0, learning_rate=0.1, num_iterations=10)
+            band_width=1.0, lr=0.1, max_iter=10)
         target.fit(self.X_normal, self.X_error)
-        self.assertEqual(len(target.get_running_loss()), 10)
+        self.assertEqual(len(target.loss_), 10)
 
 
 if __name__ == '__main__':
