@@ -38,14 +38,14 @@ class TestCAD(unittest.TestCase):
                                  -3.722489636])
 
     def test_score_shape(self):
-        target = self._makeOne()
-        target.fit(self.y_normal, threshold=3)
+        target = self._makeOne(threshold=3)
+        target.fit(self.y_normal)
         pred = target.score(self.y_error, cumsum_on=True)
         self.assertEqual(pred.shape, (10, 1))
 
     def test_score_shape_2(self):
-        target = self._makeOne()
-        target.fit(self.y_normal, threshold=3)
+        target = self._makeOne(threshold=3)
+        target.fit(self.y_normal)
         pred = target.score(self.y_error, cumsum_on=False)
         self.assertEqual(pred.shape, (10, 1))
 
@@ -137,11 +137,11 @@ class TestHotelingT2(unittest.TestCase):
         self.assertEqual(pred.shape, (10, 1))
 
 
-class TestDirectionalDataAnomalyDetection(unittest.TestCase):
+class TestAD3(unittest.TestCase):
 
     def _getTarget(self):
-        from pyanom.outlier_detection import DirectionalDataAnomalyDetection
-        return DirectionalDataAnomalyDetection
+        from pyanom.outlier_detection import AD3
+        return AD3
 
     def _makeOne(self, *args, **kwargs):
         return self._getTarget()(*args, **kwargs)

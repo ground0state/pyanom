@@ -1,24 +1,33 @@
 """
-Copyright (c) 2019 ground0state. All rights reserved.
+Copyright (c) 2019-2021 ground0state. All rights reserved.
 License: MIT License
 """
 import numpy as np
-# from scipy.stats import f
-from pyanom.utils import check_array_type, check_input_shape, check_array_feature_dimension, zscore, tensor_normalize
+from sklearn.base import BaseEstimator, DensityMixin
+from sklearn.utils.validation import check_is_fitted
+
+from pyanom.utils import (check_array_feature_dimension, check_array_type,
+                          tensor_normalize)
 
 
-class CAD():
+class CAD(BaseEstimator):
     """CUSUM Anomaly Detection.
+
+    Parameters
+    ----------
+    threshold: float
+        Size of the shift that is to be detected.
     """
 
-    def __init__(self):
-        self.normal_mean = None
-        self.normal_std = None
-        self.error_mean = None
-        self.nu = None
-        self.uppper = None
+    def __init__(self, threshold):
+        self.threshold = threshold
 
-    def fit(self, y, threshold):
+        self.normal_mean_ = None
+        self.normal_std_ = None
+        self.nu_ = None
+        self.uppper_ = None
+
+    def fit(self, y):
         """Fit the model according to the given train data.
 
         Parameters
@@ -37,16 +46,15 @@ class CAD():
         y = check_array_type(y)
         check_array_feature_dimension(y, 1)
 
-        self.normal_mean = np.mean(y)
-        self.normal_std = np.std(y)
-        self.error_mean = threshold
-        self.nu = self.error_mean - self.normal_mean
+        self.normal_mean_ = np.mean(y)
+        self.normal_std_ = np.std(y)
+        error_mean_ = self.threshold
+        self.nu_ = error_mean_ - self.normal_mean_
 
-        if self.nu > 0:
-            self.uppper = True
+        if self.nu_ > 0:
+            self.uppper_ = True
         else:
-            self.uppper = False
-
+            self.uppper_ = False
         return self
 
     def score(self, y_test, cumsum_on=True):
@@ -58,23 +66,24 @@ class CAD():
             Error measured vectors, where n_samples is the number of samples.
 
         cumsum_on: bool
-            If True, return cumsumed anomaly score. If False, return pure anomaly score. 
+            If True, return cumsumed anomaly score. If False, return pure anomaly score.
 
         Returns
         -------
-        anomaly_score : array-like, shape (n_samples,)
+        anomaly_score : ndarray, shape (n_samples,)
             Anomaly score.
         """
         # validation
+        check_is_fitted(self)
         y_test = check_array_type(y_test)
         check_array_feature_dimension(y_test, 1)
 
-        if self.uppper:
-            anomaly_socre = self.nu * \
-                (y_test - self.normal_mean - self.nu/2)/self.normal_std**2
+        if self.uppper_:
+            anomaly_socre = self.nu_ * \
+                (y_test - self.normal_mean_ - self.nu_ / 2) / self.normal_std_**2
         else:
-            anomaly_socre = -1*self.nu * \
-                (y_test - self.normal_mean + self.nu/2)/self.normal_std**2
+            anomaly_socre = -1 * self.nu_ * \
+                (y_test - self.normal_mean_ + self.nu_ / 2) / self.normal_std_**2
 
         a_operated = 0
         anomaly_socre_cumsum = []
@@ -90,15 +99,15 @@ class CAD():
             return anomaly_socre
 
 
-class HotelingT2():
+class HotelingT2(BaseEstimator, DensityMixin):
     """Hotelling's t-squared statistic.
     """
 
     def __init__(self):
-        self.mean_val = None
-        self.cov_val_inv = None
-        self.M = None
-        self.N = None
+        self.mean_val_ = None
+        self.cov_val_inv_ = None
+        self.M_ = None
+        self.N_ = None
 
     def fit(self, X):
         """Fit the Hotelling's t-squared model according to the given train data.
@@ -116,12 +125,12 @@ class HotelingT2():
         # validation
         X = check_array_type(X)
 
-        self.N, self.M = X.shape
-        self.mean_val = X.mean(axis=0)
-        if self.M > 1:
-            self.cov_val_inv = np.linalg.inv(np.cov(X, rowvar=0, bias=1))
-        elif self.M == 1:
-            self.cov_val_inv = np.array([1/np.var(X)])
+        self.N_, self.M_ = X.shape
+        self.mean_val_ = X.mean(axis=0)
+        if self.M_ > 1:
+            self.cov_val_inv_ = np.linalg.inv(np.cov(X, rowvar=0, bias=1))
+        elif self.M_ == 1:
+            self.cov_val_inv_ = np.array([1 / np.var(X)])
         else:
             raise ValueError("Input shape is incorrect")
 
@@ -138,31 +147,38 @@ class HotelingT2():
 
         Returns
         -------
-        anomaly_score : array-like, shape (n_samples,)
+        anomaly_score : ndarray, shape (n_samples,)
             Anomaly score.
         """
         # validation
+        check_is_fitted(self)
         X = check_array_type(X)
 
         pred = []
         for x in X:
-            if self.M > 1:
-                a = (x-self.mean_val)@self.cov_val_inv@(x-self.mean_val)
-            elif self.M == 1:
-                a = (x-self.mean_val)**2*self.cov_val_inv
-
-            # T2 = (self.N - self.M)/((self.N + 1) * self.M) * a
-            # prob = f.pdf(T2, self.M, self.N-self.M)
+            if self.M_ > 1:
+                a = (x - self.mean_val_) @ self.cov_val_inv_ @ (x - self.mean_val_)
+            elif self.M_ == 1:
+                a = (x - self.mean_val_)**2 * self.cov_val_inv_
             pred.append(a)
-
         return np.asarray(pred)
 
 
-class DirectionalDataAnomalyDetection():
-    def __init__(self):
-        self.mean_val = None
+class AD3(BaseEstimator, DensityMixin):
+    """Anomaly detection of directional data according to the von Mises-Fisher distribution.
 
-    def fit(self, X, normalize=True):
+    Parameters
+    ----------
+    normalize: bool
+        If True, normalize input array.
+    """
+
+    def __init__(self, normalize=True):
+        self.normalize = normalize
+
+        self.mean_val_ = None
+
+    def fit(self, X):
         """Fit the model according to the given train data.
 
         Parameters
@@ -181,10 +197,10 @@ class DirectionalDataAnomalyDetection():
         # validation
         X = check_array_type(X)
 
-        if normalize:
+        if self.normalize:
             X = tensor_normalize(X, axis=1)
 
-        self.mean_val = X.mean(axis=0).reshape(-1, 1)
+        self.mean_val_ = X.mean(axis=0).reshape(-1, 1)
 
         return self
 
@@ -199,11 +215,12 @@ class DirectionalDataAnomalyDetection():
 
         Returns
         -------
-        anomaly_score : array-like, shape (n_samples,)
+        anomaly_score : ndarray, shape (n_samples,)
             Anomaly score.
         """
         # validation
+        check_is_fitted(self)
         X = check_array_type(X)
 
-        anomaly_score = 1 - X@self.mean_val
+        anomaly_score = 1 - X @ self.mean_val_
         return anomaly_score

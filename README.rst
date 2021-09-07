@@ -18,6 +18,8 @@ REQUIREMENTS
 
 -  numpy
 -  pandas
+-  scikit-learn
+-  scipy
 
 INSTALLATION
 ------------
@@ -35,15 +37,15 @@ Kullback-Leibler desity estimation
 .. code:: python
 
    import numpy as np
-   from pyanom.density_ratio_estimation import KLDensityRatioEstimation
+   from pyanom.density_ratio_estimation import KLDensityRatioEstimator
 
-   X_normal = np.loadtxt("../input/normal_data.csv", delimiter=",")
-   X_error = np.loadtxt("../input/error_data.csv", delimiter=",")
+   X_normal = np.loadtxt("./data/normal_data.csv", delimiter=",")
+   X_error = np.loadtxt("./data/error_data.csv", delimiter=",")
 
-   model = KLDensityRatioEstimation(
-       band_width=0.1, learning_rate=0.1, num_iterations=100)
+   model = KLDensityRatioEstimator(
+      band_width=h, lr=0.001, max_iter=100000)
    model.fit(X_normal, X_error)
-   anomaly_score = model.predict(X_normal, X_error)
+   anomaly_score = model.score(X_normal, X_error)
 
 Singular spectrum analysis
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -53,10 +55,10 @@ Singular spectrum analysis
    import numpy as np
    from pyanom.subspace_methods import SSA
 
-   y_error = np.loadtxt("../input/timeseries_error2.csv", delimiter=",")
+   y_error = np.loadtxt("./data/timeseries_error2.csv", delimiter=",")
 
-   model = SSA()
-   model.fit(y_error, window_size=50, trajectory_n=25, trajectory_pattern=3, test_n=25, test_pattern=2, lag=25)
+   model = SSA(window_size=50, trajectory_n=25, trajectory_pattern=3, test_n=25, test_pattern=2, lag=25)
+   model.fit(y_error)
    anomaly_score = model.score()
 
 Graphical lasso
@@ -67,12 +69,24 @@ Graphical lasso
    import numpy as np
    from pyanom.structure_learning import GraphicalLasso
 
-   X_normal = np.loadtxt("../input/normal_data.csv", delimiter=",")
-   X_error = np.loadtxt("../input/error_data.csv", delimiter=",")
+   X_normal = np.loadtxt("./data/normal_data.csv", delimiter=",")
+   X_error = np.loadtxt("./data/error_data.csv", delimiter=",")
 
-   model = GraphicalLasso()
-   model.fit(X_normal, rho=0.01, normalize=True)
-   anomaly_score = model.outlier_analysis_score(X_error)
+   model = GraphicalLasso(rho=0.1)
+   model.fit(X_normal)
+   anomaly_score = model.score(X_error)
+
+Direct learning sparse changes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code:: python
+
+   from pyanom.structure_learning import DirectLearningSparseChanges
+
+   model = DirectLearningSparseChanges(
+      lambda1=0.1, lambda2=0.3, max_iter=10000)
+   model.fit(X_normal, X_error)
+   pmatrix_diff = model.get_sparse_changes()
 
 CUSUM anomaly detection
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -83,12 +97,12 @@ CUSUM anomaly detection
    from pyanom.outlier_detection import CAD
 
    y_normal = np.loadtxt(
-       "../input/timeseries_normal.csv", delimiter=",").reshape(-1, 1)
+      "./data/timeseries_normal.csv", delimiter=",").reshape(-1, 1)
    y_error = np.loadtxt(
-       "../input/timeseries_error.csv", delimiter=",").reshape(-1, 1)
+      "./data/timeseries_error.csv", delimiter=",").reshape(-1, 1)
 
-   model = CAD()
-   model.fit(y_normal, threshold=1)
+   model = CAD(threshold=1.0)
+   model.fit(y_normal)
    anomaly_score = model.score(y_error)
 
 Hoteling T2
@@ -99,8 +113,8 @@ Hoteling T2
    import numpy as np
    from pyanom.outlier_detection import HotelingT2
 
-   X_normal = np.loadtxt("../input/normal_data.csv", delimiter=",")
-   X_error = np.loadtxt("../input/error_data.csv", delimiter=",")
+   X_normal = np.loadtxt("./data/normal_data.csv", delimiter=",")
+   X_error = np.loadtxt("./data/error_data.csv", delimiter=",")
 
    model = HotelingT2()
    model.fit(X_normal)
@@ -112,14 +126,14 @@ Directional data anomaly DirectionalDataAnomalyDetection
 .. code:: python
 
    import numpy as np
-   from pyanom.outlier_detection import DirectionalDataAnomalyDetection
+   from pyanom.outlier_detection import AD3
 
    X_normal = np.loadtxt(
-       "../input/normal_direction_data.csv", delimiter=",")
-   X_error = np.loadtxt("../input/error_direction_data.csv", delimiter=",")
+      "./data/normal_direction_data.csv", delimiter=",")
+   X_error = np.loadtxt("./data/error_direction_data.csv", delimiter=",")
 
-   model = DirectionalDataAnomalyDetection()
-   model.fit(X_normal, normalize=True))
+   model = AD3()
+   model.fit(X_normal, normalize=True)
    anomaly_score = model.score(X_error)
 
 .. |image0| image:: https://img.shields.io/badge/python-3.6%7C3.7%7C3.8-green?style=plastic

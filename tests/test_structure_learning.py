@@ -1,4 +1,3 @@
-import io
 import unittest
 
 import numpy as np
@@ -61,7 +60,7 @@ class TestGraphicalLasso(unittest.TestCase):
     def test_outlier_analysis_score_shape(self):
         target = self._makeOne()
         target.fit(self.X_normal)
-        pred = target.outlier_analysis_score(self.X_error)
+        pred = target.score(self.X_error)
         self.assertEqual(pred.shape, (20, 3))
 
     def test_incorrect_feature_size(self):
@@ -91,11 +90,13 @@ class TestGraphicalLasso(unittest.TestCase):
             target.fit(X_normal)
 
     def test_anomaly_analysis_score_shape(self):
-        target = self._makeOne()
-        target.fit(self.X_normal)
-        pred, pmatrix = target.anomaly_analysis_score(self.X_error)
+        target1 = self._makeOne()
+        target1.fit(self.X_normal)
+        target2 = self._makeOne()
+        target2.fit(self.X_error)
+        pred = self._getTarget().anomaly_analysis_score(target1.pmatrix_, target1.cov_, target2.pmatrix_, target2.cov_)
         self.assertEqual(pred.shape, (3, ))
-        self.assertEqual(pmatrix.shape, (3, 3))
+        self.assertEqual(target1.pmatrix_.shape, (3, 3))
 
 
 if __name__ == '__main__':

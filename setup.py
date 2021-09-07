@@ -1,9 +1,6 @@
-# -*- coding: utf-8 -*-
-
 import os
-import sys
-from setuptools import setup, find_packages
 
+from setuptools import find_packages, setup
 
 with open('README.rst') as f:
     readme = f.read()
@@ -19,8 +16,7 @@ def read_requirements():
 
 setup(
     name='pyanom',
-    version='0.0.1b1',
-    description='Anomaly detection package',
+    description='Anomaly detection package.',
     long_description=readme,
     long_description_content_type="text/x-rst",
     author='Masafumi Abeta',
@@ -28,7 +24,7 @@ setup(
     install_requires=read_requirements(),
     url='https://github.com/ground0state/pyanom',
     license="MIT",
-    packages=find_packages(exclude=('tests', 'docs', 'input')),
+    packages=find_packages(exclude=('tests', 'docs', 'demo')),
     test_suite='tests',
     classifiers=[
         'License :: OSI Approved :: MIT License',
