@@ -2,6 +2,8 @@
 
 ![](https://img.shields.io/badge/python-3.6%7C3.7%7C3.8-green?style=plastic)
 ![](https://img.shields.io/badge/dynamic/json.svg?label=version&colorB=5f9ea0&query=$.version&uri=https://raw.githubusercontent.com/ground0state/pyanom/master/package.json&style=plastic)
+[![Downloads](https://static.pepy.tech/personalized-badge/pyanom?period=total&units=none&left_color=grey&right_color=orange&left_text=Downloads)](https://pepy.tech/project/pyanom)
+[![Downloads](https://static.pepy.tech/personalized-badge/pyanom?period=month&units=none&left_color=grey&right_color=orange&left_text=Downloads/Month)](https://pepy.tech/project/pyanom)
 
 This library is Python projects for anomaly detection. This contains these techniques.
 

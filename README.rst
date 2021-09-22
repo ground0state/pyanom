@@ -1,7 +1,7 @@
 pyanom
 ======
 
-|image0| |image1|
+|image0| |image1| |image2| |image3|
 
 This library is Python projects for anomaly detection. This contains
 these techniques.
@@ -138,4 +138,7 @@ Directional data anomaly DirectionalDataAnomalyDetection
 
 .. |image0| image:: https://img.shields.io/badge/python-3.6%7C3.7%7C3.8-green?style=plastic
 .. |image1| image:: https://img.shields.io/badge/dynamic/json.svg?label=version&colorB=5f9ea0&query=$.version&uri=https://raw.githubusercontent.com/ground0state/pyanom/master/package.json&style=plastic
-
+.. |image2| image:: https://static.pepy.tech/personalized-badge/pyanom?period=total&units=none&left_color=grey&right_color=orange&left_text=Downloads
+ :target: https://pepy.tech/project/pyanom
+.. |image3| image:: https://static.pepy.tech/personalized-badge/pyanom?period=month&units=none&left_color=grey&right_color=orange&left_text=Downloads/Month
+ :target: https://pepy.tech/project/pyanom
